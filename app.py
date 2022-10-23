@@ -2,44 +2,34 @@ import os
 import json
 import requests
 from lxml import etree
-from flask import Flask
+from flask import Flask, render_template
 from datetime import datetime
 from bs4 import BeautifulSoup
-from flask_sqlalchemy import SQLAlchemy
+from models import model
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-db = SQLAlchemy(app)
 
-class CbsNews(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
-    link = db.Column(db.String(120), unique=False, nullable=False)
-    image = db.Column(db.String(120), unique=False, nullable=False)
-    description = db.Column(db.String(120), unique=False, nullable=False)
-    # SQLAlchemy.create_all()
- 
+@app.route('/', methods=["GET"])
+def index():
+    url = "https://www.cbsnews.com/latest/rss/main"
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, features="xml")
+    
+    # return soup.find_all('item')
+    my_list = []
+    for data in soup:
+        val = {
+            "title": data.title.text,
+            "link": data.link.text,
+            "description": data.description.text,
+            "image": data.image.text,
+        }
+        my_list.append(val)
+    return my_list
 
-    @app.route('/')
-    def index():
-        url = "https://www.cbsnews.com/latest/rss/main"
-        page = requests.get(url)
-        data = page.json()
-        # html_path = os.path.join(os.path.dirname(__file__), url) 
-        # root = etree.fromstring(url)
-        
-        return page.json()
-        # result = etree.tostring(root)   
-        # with open(result, 'r') as html_file:
-        #    doc = html_file.read()
-
-        # soup = BeautifulSoup(doc, 'html.parser')
-        # return soup
-
-
-    @app.route('/cbs_news')
-    def cbs_news():
-        pass
+@app.route('/cbs_news', methods=["GET"])
+def cbs_news():
+    pass
 
 if __name__ == "__main__":
     index()
