@@ -9,8 +9,8 @@ from models import model
 
 app = Flask(__name__)
 
-@app.route('/', methods=["GET"])
-def index():
+@app.route('/cbs_news', methods=["GET"])
+def cbs_news():
     url = "https://www.cbsnews.com/latest/rss/main"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, features="xml")
@@ -26,10 +26,6 @@ def index():
         }
         my_list.append(val)
     return my_list
-
-@app.route('/cbs_news', methods=["GET"])
-def cbs_news():
-    pass
 
 if __name__ == "__main__":
     index()
