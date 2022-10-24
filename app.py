@@ -16,7 +16,7 @@ def cbs_news():
     soup = BeautifulSoup(page.text, features="xml")
     
     # return soup.find_all('item')
-    my_list = []
+    my_list = {}
     for data in soup:
         val = {
             "title": data.title.text,
@@ -24,7 +24,8 @@ def cbs_news():
             "description": data.description.text,
             "image": data.image.text,
         }
-        my_list.append(val)
+        
+        my_list['data'] = val 
     return my_list
 
 if __name__ == "__main__":
